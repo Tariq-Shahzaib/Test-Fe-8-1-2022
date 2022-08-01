@@ -1,13 +1,10 @@
 import React from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import CustomTextField from "./CustomTextField";
 const useStyles = makeStyles((theme) => ({
   "@global": {
     body: {
@@ -33,18 +30,63 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// intial form state
+const INITIAL_FORM_STATE = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phoneNumber: "",
+};
+
+// form validation goes here
+
+const FORM_VALIDATION = Yup.object().shape({
+  firstName: Yup.string().required("Required"),
+  lastName: Yup.string().required("Required"),
+  email: Yup.string().email("Invalid Email").required("Required"),
+  phoneNumber: Yup.number()
+    .integer()
+    .typeError("Please enter a valid phone number")
+    .required("Required"),
+});
+
 export default function CreateUser() {
   const classes = useStyles();
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}></Avatar>
-        <Typography component="h1" variant="h5">
-          Sign up
-        </Typography>
-        <form className={classes.form} noValidate>
+    <Formik
+      initialValues={{
+        ...INITIAL_FORM_STATE,
+      }}
+      validationSchema={FORM_VALIDATION}
+      onSubmit={(values) => {
+        console.log(values);
+      }}
+    >
+      <Form>
+        <Grid contianer spacing={2}>
+          <Grid item xs={12}>
+            <Typography>Your Details</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <CustomTextField name="firstName" label="First Name" />
+          </Grid>
+          <Grid item xs={6}>
+            <CustomTextField name="lastName" label="Last Name" />
+          </Grid>
+          <Grid item xs={6}>
+            <CustomTextField name="email" label="Email" />
+          </Grid>
+          <Grid item xs={6}>
+            <CustomTextField name="phoneNumber" label="phone Number" />
+          </Grid>
+        </Grid>
+      </Form>
+    </Formik>
+  );
+}
+
+/*   <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -102,8 +144,4 @@ export default function CreateUser() {
           >
             Create User
           </Button>
-        </form>
-      </div>
-    </Container>
-  );
-}
+        </form> */
