@@ -4,8 +4,9 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import CustomTextField from "./CustomTextField";
-import SubmitButton from "./SubmitButton";
+import CustomTextField from "../components/CustomTextField";
+import SubmitButton from "../components/SubmitButton";
+import axios from "axios";
 const useStyles = makeStyles((theme) => ({
   "@global": {
     body: {
@@ -31,6 +32,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// TODO need to move in utils folder
+const CREATE_USER_API_URL = "https://gorest.co.in/public/v2/users";
+// TODO need to create .env file to store this
+const TOKEN =
+  "1b90c3e7ad44399cafca4d220ba91705e14fd24af8e9ce8bc33380b280581b5a";
+
 // intial form state
 const INITIAL_FORM_STATE = {
   firstName: "",
@@ -40,7 +47,6 @@ const INITIAL_FORM_STATE = {
 };
 
 // form validation goes here
-
 const FORM_VALIDATION = Yup.object().shape({
   firstName: Yup.string().required("Required"),
   lastName: Yup.string().required("Required"),
@@ -50,6 +56,30 @@ const FORM_VALIDATION = Yup.object().shape({
     .typeError("Please enter a valid phone number")
     .required("Required"),
 });
+
+const handleSubmit = async (values) => {
+  const loginFormData = new FormData();
+  loginFormData.append("name", values.firstName);
+  loginFormData.append("email", values.email);
+  loginFormData.append("gender", "female");
+  loginFormData.append("status", "active");
+  // loginFormData.append("password", formValue.password);
+
+  try {
+    // make axios post request
+    const response = await axios({
+      method: "post",
+      url: CREATE_USER_API_URL,
+      data: loginFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${TOKEN}`,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export default function CreateUser() {
   const classes = useStyles();
@@ -61,6 +91,7 @@ export default function CreateUser() {
       }}
       validationSchema={FORM_VALIDATION}
       onSubmit={(values) => {
+        handleSubmit(values);
         console.log(values);
       }}
     >
