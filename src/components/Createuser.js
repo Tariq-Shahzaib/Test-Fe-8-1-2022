@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import CustomTextField from "./CustomTextField";
+import SubmitButton from "./SubmitButton";
 const useStyles = makeStyles((theme) => ({
   "@global": {
     body: {
@@ -80,6 +81,10 @@ export default function CreateUser() {
           <Grid item xs={6}>
             <CustomTextField name="phoneNumber" label="phone Number" />
           </Grid>
+          <Grid item xs={6}></Grid>
+        </Grid>
+        <Grid item xs={6}>
+          <SubmitButton> Create User </SubmitButton>
         </Grid>
       </Form>
     </Formik>

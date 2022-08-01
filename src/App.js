@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import SignUpSide from "./components/Createuser";
+import SignUpSide from "./components/CreateUser";
 
 export default function App() {
   return <SignUpSide />;
