@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import CustomTextField from "../components/CustomTextField";
+import CustomSelect from "../components/Select";
 import SubmitButton from "../components/SubmitButton";
 import axios from "axios";
 const useStyles = makeStyles((theme) => ({
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: "100%",
     marginTop: theme.spacing(3),
   },
   submit: {
@@ -43,7 +44,7 @@ const INITIAL_FORM_STATE = {
   firstName: "",
   lastName: "",
   email: "",
-  phoneNumber: "",
+  gender: "",
 };
 
 // form validation goes here
@@ -51,19 +52,16 @@ const FORM_VALIDATION = Yup.object().shape({
   firstName: Yup.string().required("Required"),
   lastName: Yup.string().required("Required"),
   email: Yup.string().email("Invalid Email").required("Required"),
-  phoneNumber: Yup.number()
-    .integer()
-    .typeError("Please enter a valid phone number")
-    .required("Required"),
+  gender: Yup.string().required("Required"),
 });
 
 const handleSubmit = async (values) => {
+  let fullName = values.firstName + " " + values.lastName;
   const loginFormData = new FormData();
-  loginFormData.append("name", values.firstName);
+  loginFormData.append("name", fullName);
   loginFormData.append("email", values.email);
-  loginFormData.append("gender", "female");
+  loginFormData.append("gender", values.gender);
   loginFormData.append("status", "active");
-  // loginFormData.append("password", formValue.password);
 
   try {
     // make axios post request
@@ -76,7 +74,11 @@ const handleSubmit = async (values) => {
         Authorization: `Bearer ${TOKEN}`,
       },
     });
+    alert("User Created Sucessfully");
+    window.location.reload(true);
   } catch (error) {
+    // TODO need to handle diffrent errors especially if user already exists
+    alert("Something went wrong while creating user please try again later");
     console.log(error);
   }
 };
@@ -90,94 +92,42 @@ export default function CreateUser() {
         ...INITIAL_FORM_STATE,
       }}
       validationSchema={FORM_VALIDATION}
-      onSubmit={(values) => {
+      onSubmit={(values, { resetForm }) => {
         handleSubmit(values);
+        resetForm(INITIAL_FORM_STATE);
         console.log(values);
       }}
     >
       <Form>
-        <Grid contianer spacing={2}>
+        <Grid container spacing={2} alignItems="center" justifyContent="center">
           <Grid item xs={12}>
-            <Typography>Your Details</Typography>
+            <Typography variant="h5" justify="center" align="center">
+              Create User Form
+            </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={7}>
+            <Typography>Name</Typography>
             <CustomTextField name="firstName" label="First Name" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={7}>
+            <Typography>SurName</Typography>
             <CustomTextField name="lastName" label="Last Name" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={7}>
+            <Typography>Email</Typography>
+
             <CustomTextField name="email" label="Email" />
           </Grid>
-          <Grid item xs={6}>
-            <CustomTextField name="phoneNumber" label="phone Number" />
+          <Grid item xs={7}>
+            <Typography>Gender</Typography>
+            <CustomSelect name="gender" label="Gender" />
           </Grid>
-          <Grid item xs={6}></Grid>
-        </Grid>
-        <Grid item xs={6}>
-          <SubmitButton> Create User </SubmitButton>
+
+          <Grid item xs={7}>
+            <SubmitButton> Create User </SubmitButton>
+          </Grid>
         </Grid>
       </Form>
     </Formik>
   );
 }
-
-/*   <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Create User
-          </Button>
-        </form> */
